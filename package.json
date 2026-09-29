@@ -1,0 +1,24 @@
+{
+  "name": "student-manager-ci-demo",
+  "version": "1.0.0",
+  "description": "Student Manager app with PostgreSQL database - CI/CD demo",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "jest",
+    "build": "echo 'Build successful'"
+  },
+  "keywords": ["ci", "cd", "github-actions", "demo", "postgresql"],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "express": "^5.2.1",
+    "pg": "^8.11.3"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^6.3.3"
+  }
+}
+

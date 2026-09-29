@@ -1,0 +1,90 @@
+name: CI Pipeline with PostgreSQL
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: student_manager
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+    # 1. Checkout: Get the code from GitHub
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # 2. Setup: Install Node.js runtime
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    # 3. Install: Download all dependencies
+    - name: Install dependencies
+      run: npm ci
+
+    # 🔐 Demo: Show how database secrets are used (without revealing values)
+    - name: Verify PostgreSQL Database Configuration
+      run: |
+        echo "✅ PostgreSQL Configuration from GitHub Secrets:"
+        echo "   Database Host: $DB_HOST:$DB_PORT"
+        echo "   Database Name: $DB_NAME"
+        echo "   Database User: $DB_USER"
+      env:
+        DB_HOST: ${{ secrets.DB_HOST || 'localhost' }}
+        DB_PORT: ${{ secrets.DB_PORT || '5432' }}
+        DB_NAME: ${{ secrets.DB_NAME || 'student_manager' }}
+        DB_USER: ${{ secrets.DB_USER || 'postgres' }}
+
+    # 4. Test: Run all tests (với PostgreSQL database)
+    - name: Run tests
+      run: npm test
+      env:
+        DB_HOST: ${{ secrets.DB_HOST || 'localhost' }}
+        DB_PORT: ${{ secrets.DB_PORT || '5432' }}
+        DB_NAME: ${{ secrets.DB_NAME || 'student_manager' }}
+        DB_USER: ${{ secrets.DB_USER || 'postgres' }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD || 'postgres' }}
+
+    # 5. Build: Prepare for production
+    - name: Build application
+      run: npm run build
+
+  # Deployment demo step - hiển thị cách sử dụng secrets trong production
+  deploy-demo:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+
+    steps:
+    - name: Simulate production deployment with PostgreSQL
+      run: |
+        echo "🗄️  PostgreSQL Configuration:"
+        echo "   Host: $DB_HOST"
+        echo "   Port: $DB_PORT"
+        echo "   Database: $DB_NAME"
+        echo "   User: $DB_USER"
+      env:
+        DB_HOST: ${{ secrets.DB_HOST || 'prod-db.example.com' }}
+        DB_PORT: ${{ secrets.DB_PORT || '5432' }}
+        DB_NAME: ${{ secrets.DB_NAME || 'student_manager_prod' }}
+        DB_USER: ${{ secrets.DB_USER || 'db_admin' }}
+

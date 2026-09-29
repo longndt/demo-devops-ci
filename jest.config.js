@@ -1,0 +1,6 @@
+module.exports = {
+  testEnvironment: 'node',
+  testMatch: ['**/__tests__/**/*.js', '**/*.test.js'],
+  forceExit: true,
+  detectOpenHandles: false
+};
