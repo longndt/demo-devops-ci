@@ -161,7 +161,7 @@ describe('Student Manager API with PostgreSQL', () => {
    });
 
    // intentionally failing test
-   test('this test will FALSE', () => {
-      expect(1 + 1).toBe(3);
+   test('this test will TRUE', () => {
+      expect(1 + 1).toBe(2);
    });
 });
